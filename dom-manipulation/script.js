@@ -138,7 +138,7 @@ async function syncQuotes() {
         if (conflictResolved) {
             showNotification("⚠️ Conflicts resolved using server data");
         } else {
-            showNotification("🔄 New quotes synced from server");
+            showNotification("🔄 Quotes synced with server!");
         }
     }
 }
