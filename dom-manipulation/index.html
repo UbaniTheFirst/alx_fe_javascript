@@ -11,20 +11,25 @@
 
     <h1>Dynamic Quote Generator</h1>
 
-    <!-- Display area -->
     <div id="quoteDisplay"></div>
 
-    <!-- Button to show a new quote -->
     <button id="newQuote">Show New Quote</button>
 
     <hr />
 
-    <!-- Add Quote Form -->
     <div>
         <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
         <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
         <button onclick="addQuote()">Add Quote</button>
     </div>
+
+    <hr />
+
+    <!-- Export Quotes -->
+    <button onclick="exportToJson()">Export Quotes</button>
+
+    <!-- Import Quotes -->
+    <input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
 
     <script src="script.js"></script>
 </body>
