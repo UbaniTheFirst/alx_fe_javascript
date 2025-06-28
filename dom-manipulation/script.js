@@ -151,3 +151,79 @@ window.addEventListener("DOMContentLoaded", () => {
 
 // ✅ Add event listener to "Show New Quote"
 newQuoteBtn.addEventListener("click", showRandomQuote);
+
+
+// Simulated server URL (change this to your actual URL or mock endpoint)
+const SERVER_URL = 'https://example.com/serverQuotes.json'; // Replace with real URL
+
+// ✅ Fetch quotes from server
+async function fetchServerQuotes() {
+    try {
+        const response = await fetch(SERVER_URL);
+        if (!response.ok) throw new Error('Failed to fetch server quotes');
+
+        const serverQuotes = await response.json();
+        return serverQuotes;
+    } catch (error) {
+        console.error("Error fetching from server:", error);
+        return [];
+    }
+}
+
+// ✅ Sync quotes: merges server + local, resolves conflicts
+async function syncQuotes() {
+    const serverQuotes = await fetchServerQuotes();
+    let localUpdated = false;
+    let conflictResolved = false;
+
+    serverQuotes.forEach(serverQuote => {
+        const existing = quotes.find(q =>
+            q.text === serverQuote.text
+        );
+
+        if (!existing) {
+            quotes.push(serverQuote);
+            localUpdated = true;
+        } else {
+            // Conflict: same text, possibly different category
+            if (existing.category !== serverQuote.category) {
+                // Conflict resolution: server takes precedence
+                existing.category = serverQuote.category;
+                conflictResolved = true;
+                localUpdated = true;
+            }
+        }
+    });
+
+    if (localUpdated) {
+        saveQuotes();
+        populateCategories();
+        showRandomQuote();
+    }
+
+    if (conflictResolved) {
+        notifyUser("Conflicts resolved using server version.");
+    } else if (localUpdated) {
+        notifyUser("New quotes synced from server.");
+    }
+}
+
+// ✅ Notify user of sync/conflict
+function notifyUser(message) {
+    const notice = document.createElement("div");
+    notice.textContent = message;
+    notice.style.background = "#222";
+    notice.style.color = "#fff";
+    notice.style.padding = "10px";
+    notice.style.position = "fixed";
+    notice.style.top = "10px";
+    notice.style.right = "10px";
+    notice.style.zIndex = "1000";
+    notice.style.borderRadius = "5px";
+
+    document.body.appendChild(notice);
+    setTimeout(() => notice.remove(), 4000);
+}
+
+// ✅ Start periodic sync every 30 seconds
+setInterval(syncQuotes, 30000); // 30s
